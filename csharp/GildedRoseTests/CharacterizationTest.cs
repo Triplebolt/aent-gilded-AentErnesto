@@ -32,6 +32,16 @@ public class CharacterizationTest
     }
 
     [Fact]
+    public void NormalItem_PastSellByDate_DegradesQualityTwiceAsFast()
+    {
+        // SellIn already at 0: after the tick it is negative, so quality drops by 2 (10 -> 8),
+        // not 1. Starting quality is well above 0 so the floor never masks the magnitude.
+        var item = AfterOneUpdate("+5 Dexterity Vest", sellIn: 0, quality: 10);
+        Assert.Equal(-1, item.SellIn);
+        Assert.Equal(8, item.Quality);
+    }
+
+    [Fact]
     public void AgedBrie_IncreasesInQualityAsItAges()
     {
         var item = AfterOneUpdate("Aged Brie", sellIn: 2, quality: 0);
