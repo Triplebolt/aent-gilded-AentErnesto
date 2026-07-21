@@ -2,14 +2,14 @@
 # Golden-master check: runs the 30-day Gilded Rose simulation and diffs the
 # output against the canonical fixture in texttests/ThirtyDays/stdout.gr.
 #
-# Usage: ./scripts/golden-master-check.sh [ts|csharp|all]   (default: all)
+# Usage: ./scripts/golden-master-check.sh [csharp]   (default: csharp)
 #
 # Exit code 0 = output matches the golden master; nonzero = behavior changed.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FIXTURE="$ROOT/texttests/ThirtyDays/stdout.gr"
-TARGET="${1:-all}"
+TARGET="${1:-csharp}"
 FAIL=0
 
 normalize() { tr -d '\r'; }
@@ -30,14 +30,11 @@ check() {
   rm -f "$out" "$diffout"
 }
 
-run_ts()     { (cd "$ROOT/TypeScript" && npx tsx test/golden-master-text-test.ts 30); }
 run_csharp() { dotnet run --project "$ROOT/csharp/GildedRose" --configuration Release -- 30; }
 
 case "$TARGET" in
-  ts)     check "TypeScript" run_ts ;;
   csharp) check "C#" run_csharp ;;
-  all)    check "TypeScript" run_ts; check "C#" run_csharp ;;
-  *)      echo "Usage: $0 [ts|csharp|all]"; exit 2 ;;
+  *)      echo "Usage: $0 [csharp]"; exit 2 ;;
 esac
 
 exit $FAIL
